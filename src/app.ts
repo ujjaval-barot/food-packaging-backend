@@ -19,7 +19,7 @@ app.use("/api/auth", authRoutes);
 
 setupSwagger(app);
 
-// ✅ Global error handler - should be the last middleware
+// Global error handler - should be the last middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error("Unhandled Error:", err.stack);
   errorResponse(

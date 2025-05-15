@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TAG_ACTIONS, TAGS } from "../constants/enum";
 
 export const getCategoryByIdSchema = z.object({
   id: z.string(),
@@ -30,3 +31,8 @@ export const updateCategorySchema = z
   });
 
 export type updateCategoryInput = z.infer<typeof updateCategorySchema>;
+
+export const updateCategoryTagSchema = z.object({
+  tag: z.enum(TAGS),
+  action: z.enum(TAG_ACTIONS),
+});

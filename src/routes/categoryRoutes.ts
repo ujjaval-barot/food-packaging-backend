@@ -7,6 +7,7 @@ import {
   createCategorySchema,
   getCategoryByIdSchema,
   updateCategorySchema,
+  updateCategoryTagSchema,
 } from "../validations/categoryValidations";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -139,6 +140,56 @@ router.put(
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(updateCategorySchema, "body"),
   asyncHandler(categoryController.updateCategory)
+);
+
+/**
+ * @swagger
+ * /api/categories/{id}/manage-tag:
+ *   patch:
+ *     summary: Add or remove a tag on a category (Admin only)
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Category ID
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tag:
+ *                 type: string
+ *                 enum: [featured, trending, popular]
+ *               action:
+ *                 type: string
+ *                 enum: [add, remove]
+ *             required:
+ *               - tag
+ *               - action
+ *     responses:
+ *       200:
+ *         description: Tag updated successfully
+ *       400:
+ *         description: Invalid request
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Category not found
+ */
+router.patch(
+  "/:id/manage-tag",
+  authenticateOptional,
+  authorize(["admin"]),
+  validateRequest(getCategoryByIdSchema, "params"),
+  validateRequest(updateCategoryTagSchema, "body"),
+  asyncHandler(categoryController.manageCategoryTag)
 );
 
 /**

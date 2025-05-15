@@ -12,3 +12,11 @@ export interface CustomJwtPayload {
   userId: string;
   role: "admin" | "user";
 }
+
+export type CategoryLabel = "featured" | "trending" | "popular";
+
+export interface IAsset {
+  url: string;
+  publicId: string;
+  type: "image" | "video";
+}
