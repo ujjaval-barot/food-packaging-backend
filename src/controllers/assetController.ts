@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { uploadToCloudinary } from "../services/cloudinaryService";
 import { errorResponse, successResponse } from "../utils/responseHandler";
+import { MAX_IMAGE_SIZE, MAX_VIDEO_SIZE } from "../constants/enum";
 
 export const uploadAssets = async (req: Request, res: Response) => {
   try {
@@ -10,6 +11,18 @@ export const uploadAssets = async (req: Request, res: Response) => {
     const files = req.files as Express.Multer.File[];
     if (!files || files.length === 0)
       return errorResponse(res, "No files uploaded", 400);
+
+    files.forEach((file) => {
+      const isImage = file.mimetype.startsWith("image/");
+      const isVideo = file.mimetype.startsWith("video/");
+
+      if (isImage && file.size > MAX_IMAGE_SIZE) {
+        throw new Error(`Image ${file.originalname} exceeds 5MB limit`);
+      }
+      if (isVideo && file.size > MAX_VIDEO_SIZE) {
+        throw new Error(`Video ${file.originalname} exceeds 50MB limit`);
+      }
+    });
 
     const uploads = await Promise.all(
       files.map((file) =>

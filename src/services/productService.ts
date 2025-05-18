@@ -1,10 +1,10 @@
 import Product from "../models/Product";
 import {
-  createProductInput,
-  updateProductInput,
+  CreateProductInput,
+  UpdateProductInput,
 } from "../validations/productValidations";
 
-export const createProductService = async (body: createProductInput) => {
+export const createProductService = async (body: CreateProductInput) => {
   return await Product.create(body);
 };
 
@@ -18,7 +18,7 @@ export const getProductById = async (id: string) => {
 
 export const updateProductById = async (
   id: string,
-  body: updateProductInput
+  body: UpdateProductInput
 ) => {
   return await Product.findByIdAndUpdate(id, body, {
     new: true,

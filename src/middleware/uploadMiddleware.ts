@@ -1,19 +1,34 @@
 import multer from "multer";
+import { Request } from "express";
+import {
+  ALLOWED_IMAGE_TYPES,
+  ALLOWED_VIDEO_TYPES,
+  MAX_VIDEO_SIZE,
+} from "../constants/enum";
 
-// Memory storage since we'll directly upload to Cloudinary
 const storage = multer.memoryStorage();
 
-const fileFilter = (req: any, file: any, cb: any) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "video/mp4"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only images and videos are allowed"), false);
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  const isAllowed =
+    ALLOWED_IMAGE_TYPES.includes(file.mimetype) ||
+    ALLOWED_VIDEO_TYPES.includes(file.mimetype);
+
+  if (!isAllowed) {
+    return cb(new Error("Only image and video files are allowed"));
   }
+  cb(null, true);
+};
+
+const limits = {
+  fileSize: MAX_VIDEO_SIZE, // highest possible — per-file checking happens later
 };
 
 export const uploadMiddleware = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit per file
-}).array("files", 5); // max 5 files
+  limits,
+}).array("files", 5);

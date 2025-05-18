@@ -1,5 +1,7 @@
 import { Schema, model, Document, Types } from "mongoose";
 import { ICategory } from "./Category";
+import { ASSET_TYPES } from "../constants/enum";
+import { IAsset } from "../types/custom";
 
 export interface IProduct extends Document {
   name: string;
@@ -14,6 +16,7 @@ export interface IProduct extends Document {
   category: Types.ObjectId; // Parent category
   tags?: string[];
   similarProducts?: Types.ObjectId[];
+  assets: IAsset[];
 }
 
 const productSchema = new Schema<IProduct>(
@@ -37,6 +40,13 @@ const productSchema = new Schema<IProduct>(
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     tags: [{ type: String }],
     similarProducts: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    assets: [
+      {
+        url: { type: String, required: true },
+        publicId: { type: String, required: true },
+        type: { type: String, enum: ASSET_TYPES, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

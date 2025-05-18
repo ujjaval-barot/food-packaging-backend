@@ -20,3 +20,5 @@ export interface IAsset {
   publicId: string;
   type: "image" | "video";
 }
+
+export type LeanDoc<T> = T extends Document ? Omit<T, keyof Document> : T;
