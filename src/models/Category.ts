@@ -3,10 +3,12 @@ import { CategoryLabel, IAsset } from "../types/custom";
 import { ASSET_TYPES, TAGS } from "../constants/enum";
 
 export interface ICategory extends Document {
+  _id: string;
   name: string;
   description?: string;
   parentCategory?: string;
   labels?: CategoryLabel[];
+  productCount: number;
   assets: IAsset[];
 }
 
@@ -16,6 +18,7 @@ const categorySchema = new Schema<ICategory>(
     description: String,
     parentCategory: { type: Types.ObjectId, ref: "Category", default: null },
     labels: [{ type: String, enum: TAGS }],
+    productCount: { type: Number, default: 0 },
     assets: [
       {
         url: { type: String, required: true },

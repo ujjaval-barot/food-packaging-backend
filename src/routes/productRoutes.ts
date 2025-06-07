@@ -6,6 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler";
 import {
   createProductSchema,
   getProductByIdSchema,
+  productListByCategoryParamsSchema,
+  productListByCategoryQuerySchema,
+  productListByLabelSchema,
   updateProductSchema,
 } from "../validations/productValidations";
 import { validateRequest } from "../middleware/validateRequest";
@@ -30,9 +33,28 @@ const router = Router();
  *         description: List of products
  */
 router.get(
-  "/",
+  "/by-category/:id",
   authenticateOptional,
+  validateRequest(productListByCategoryParamsSchema, "params"),
+  validateRequest(productListByCategoryQuerySchema, "query"),
   asyncHandler(productController.getProducts)
+);
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get all products by label
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of products
+ */
+router.get(
+  "/products-by-label",
+  authenticateOptional,
+  validateRequest(productListByLabelSchema, "query"),
+  asyncHandler(productController.getProductsByLabel)
 );
 
 /**

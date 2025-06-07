@@ -1,16 +1,24 @@
 import Category from "../models/Category";
+import Product from "../models/Product";
 import { CategoryLabel } from "../types/custom";
+import APIFeatures from "../utils/apiFeatures";
 import {
   createCategoryInput,
   updateCategoryInput,
 } from "../validations/categoryValidations";
 
 export const getCategoryList = async () => {
-  return await Category.find().populate("parentCategory");
+  return await Category.find({ parentCategory: null });
 };
 
 export const getCategoryById = async (id: string) => {
-  return await Category.findById(id).populate("parentCategory");
+  const category = await Category.findById(id);
+
+  const subCategories = await Category.find({ parentCategory: id });
+
+  return {
+    category: { ...category, subCategories: subCategories },
+  };
 };
 
 export const createCategoryService = async (body: createCategoryInput) => {

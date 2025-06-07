@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ASSET_TYPES } from "../constants/enum";
+import { ASSET_TYPES, TAGS } from "../constants/enum";
 
 export const getProductByIdSchema = z.object({
   id: z.string().uuid(),
@@ -28,11 +28,9 @@ export const createProductSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   inStock: z.boolean().optional(),
-  images: z.array(z.string().url()).optional(),
   highlights: z.array(z.string()).optional(),
   specifications: z.array(specificationSchema).optional(),
   category: z.string(), // Mongo ObjectId as string
-  tags: z.array(z.string()).optional(),
   similarProducts: z.array(z.string()).optional(),
   assets: z
     .array(assetSchema)
@@ -47,11 +45,9 @@ export const updateProductSchema = z
     name: z.string().optional(),
     description: z.string().optional(),
     inStock: z.boolean().optional(),
-    images: z.array(z.string().url()).optional(),
     highlights: z.array(z.string()).optional(),
     specifications: z.array(specificationSchema).optional(),
     category: z.string().optional(),
-    tags: z.array(z.string()).optional(),
     similarProducts: z.array(z.string()).optional(),
     assets: z.array(assetSchema).max(5, "Maximum 5 assets allowed").optional(),
   })
@@ -65,3 +61,19 @@ export const updateProductSchema = z
   });
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
+
+export const productListByCategoryQuerySchema = z.object({
+  page: z.string().optional(),
+  limit: z.string().optional(),
+  sort: z.string().optional(),
+  categoryId: z.string().optional(),
+  search: z.string().optional(),
+});
+
+export const productListByCategoryParamsSchema = z.object({
+  id: z.string(),
+});
+
+export const productListByLabelSchema = z.object({
+  label: z.enum(TAGS),
+});

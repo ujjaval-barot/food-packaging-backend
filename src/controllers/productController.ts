@@ -1,18 +1,12 @@
 import { Request, Response } from "express";
-import {
-  createProductService,
-  deleteProductById,
-  getProductById,
-  getProductList,
-  updateProductById,
-} from "../services/productService";
+import * as productService from "../services/productService";
 import { errorResponse, successResponse } from "../utils/responseHandler";
 
 export const createProduct = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const product = await createProductService(req.body);
+  const product = await productService.createProductService(req.body);
   successResponse(res, { product }, "Product created successfully.");
 };
 
@@ -20,15 +14,27 @@ export const getProducts = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const products = await getProductList();
-  successResponse(res, { products }, "Products fetched successfully.");
+  const { products, meta } = await productService.getProductsByCategoryId(req);
+  successResponse(
+    res,
+    { products },
+    "Products fetched successfully.",
+    200,
+    meta
+  );
+};
+
+export const getProductsByLabel = async (req: Request, res: Response) => {
+  console.log(req.params);
+  const { products, meta } = await productService.getProductListByLabel(req);
+  successResponse(res, { products }, "Products by label fetched.", 200, meta);
 };
 
 export const getProduct = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const product = await getProductById(req.params.id);
+  const product = await productService.getProductById(req.params.id);
   if (!product) {
     errorResponse(res, "Product not found", 404);
     return;
@@ -40,7 +46,10 @@ export const updateProduct = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const product = await updateProductById(req.params.id, req.body);
+  const product = await productService.updateProductById(
+    req.params.id,
+    req.body
+  );
   if (!product) {
     errorResponse(res, "Product not found", 404);
     return;
@@ -52,7 +61,7 @@ export const deleteProduct = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const product = await deleteProductById(req.params.id);
+  const product = await productService.deleteProductById(req.params.id);
   if (!product) {
     errorResponse(res, "Product not found", 404);
     return;

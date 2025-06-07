@@ -4,12 +4,16 @@ export const successResponse = (
   res: Response,
   data: any,
   message = "Success",
-  statusCode = 200
+  statusCode = 200,
+  meta?: any
 ) => {
   return res.status(statusCode).json({
     success: true,
     message,
-    data,
+    data: {
+      ...data,
+      meta,
+    },
   });
 };
 

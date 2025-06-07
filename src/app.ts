@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import { setupSwagger } from "./config/swagger";
 import authRoutes from "./routes/authRoutes";
@@ -10,6 +11,13 @@ import { errorResponse } from "./utils/responseHandler";
 dotenv.config();
 
 const app = express();
+
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN || "*", // or your frontend URL like "http://localhost:3000"
+    credentials: true, // if you’re using cookies / auth headers
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
