@@ -4,6 +4,7 @@ import { authenticateOptional } from "../middleware/authMiddleware";
 import { authorize } from "../middleware/roleMiddleware";
 import { validateRequest } from "../middleware/validateRequest";
 import {
+  activateDeactivateCategorySchema,
   createCategorySchema,
   getCategoryByIdSchema,
   updateCategorySchema,
@@ -40,6 +41,32 @@ router.get(
 
 /**
  * @swagger
+ * tags:
+ *   name: Categories
+ *   description: Category management
+ */
+
+/**
+ * @swagger
+ * /api/categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
+router.get(
+  "/admin",
+  authenticateOptional,
+  authorize(["admin"]),
+  asyncHandler(categoryController.getAdminCategories)
+);
+
+/**
+ * @swagger
  * /api/categories/{id}:
  *   get:
  *     summary: Get a category by ID
@@ -62,6 +89,7 @@ router.get(
 router.get(
   "/:id",
   authenticateOptional,
+  authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   asyncHandler(categoryController.getCategory)
 );
@@ -190,6 +218,34 @@ router.patch(
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(updateCategoryTagSchema, "body"),
   asyncHandler(categoryController.manageCategoryTag)
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Product found
+ *       404:
+ *         description: Product not found
+ */
+router.post(
+  "/deactivate/:id",
+  authenticateOptional,
+  authorize(["admin"]),
+  validateRequest(getCategoryByIdSchema, "params"),
+  validateRequest(activateDeactivateCategorySchema, "body"),
+  asyncHandler(categoryController.deleteActivateCategory)
 );
 
 /**

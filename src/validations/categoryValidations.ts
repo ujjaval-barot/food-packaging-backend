@@ -64,3 +64,7 @@ export const updateCategoryTagSchema = z.object({
   tag: z.enum(TAGS),
   action: z.enum(TAG_ACTIONS),
 });
+
+export const activateDeactivateCategorySchema = z.object({
+  flag: z.boolean(),
+});

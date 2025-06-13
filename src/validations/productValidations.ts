@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ASSET_TYPES, TAGS } from "../constants/enum";
 
 export const getProductByIdSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 });
 
 export type getProductByIdInput = z.infer<typeof getProductByIdSchema>;

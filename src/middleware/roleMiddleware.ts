@@ -3,8 +3,8 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 export const authorize = (roles: string[]): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      const error = new Error("Unauthorized");
-      (error as any).status = 403;
+      const error = new Error("Unauthorized: Authentication required");
+      (error as any).status = 401;
       return next(error);
     }
 

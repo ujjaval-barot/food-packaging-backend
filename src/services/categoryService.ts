@@ -1,3 +1,4 @@
+import { Request } from "express";
 import Category from "../models/Category";
 import Product from "../models/Product";
 import { CategoryLabel } from "../types/custom";
@@ -8,16 +9,74 @@ import {
 } from "../validations/categoryValidations";
 
 export const getCategoryList = async () => {
-  return await Category.find({ parentCategory: null });
+  return await Category.find({ parentCategory: null, isActive: true });
 };
 
-export const getCategoryById = async (id: string) => {
-  const category = await Category.findById(id);
+export const getAdminCategoriesList = async (req: Request) => {
+  const { parentCategory } = req.query;
 
-  const subCategories = await Category.find({ parentCategory: id });
+  // Build category filter
+  const filter: any = {};
+
+  if (parentCategory) {
+    // If string 'null' is passed, fetch parent categories
+    if (parentCategory === "null") {
+      filter.parentCategory = null;
+    } else {
+      // Else fetch categories under given parent category id
+      filter.parentCategory = parentCategory;
+    }
+  }
+
+  // Build category query with optional filtering
+  const categoryQuery = Category.find(filter).populate("parentCategory");
+
+  // Apply search, sort, paginate via APIFeatures utility
+  const features = new APIFeatures(categoryQuery, req.query, {
+    searchFields: ["name", "description"],
+  })
+    .search()
+    .sort()
+    .paginate();
+
+  // Execute final query
+  const categories = await features.query;
+
+  // Total count (for pagination meta)
+  const totalCategories = await Category.countDocuments(filter);
+
+  // Pagination meta info
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  const meta = {
+    totalCategories,
+    page,
+    limit,
+    hasNextPage: page * limit < totalCategories,
+    hasPreviousPage: page > 1,
+  };
+
+  return { categories, meta };
+};
+
+export const getCategoryById = async (id: string, includeInactive = false) => {
+  const categoryFilter: any = { _id: id };
+  const subCategoryFilter: any = { parentCategory: id };
+
+  if (!includeInactive) {
+    categoryFilter.isActive = true;
+    subCategoryFilter.isActive = true;
+  }
+
+  const category = await Category.findOne(categoryFilter).lean();
+  if (!category) return null;
+
+  const subCategories = await Category.find(subCategoryFilter).lean();
 
   return {
-    category: { ...category, subCategories: subCategories },
+    ...category,
+    subCategories: subCategories,
   };
 };
 
@@ -52,6 +111,14 @@ export const updateCategoryTag = async (
 
   await category.save();
   return category;
+};
+
+export const activateDeactivateById = async (id: string, flag: boolean) => {
+  return await Category.findByIdAndUpdate(
+    id,
+    { isActive: flag },
+    { new: true }
+  );
 };
 
 export const deleteCategoryById = async (id: string) => {

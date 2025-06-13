@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import {
+  activateDeactivateById,
   createCategoryService,
   deleteCategoryById,
+  getAdminCategoriesList,
   getCategoryById,
   getCategoryList,
   updateCategoryById,
@@ -13,7 +15,6 @@ export const createCategory = async (req: Request, res: Response) => {
   const category = await createCategoryService(req.body); // errors bubble to asyncHandler
   successResponse(res, { category }, "Category created successfully.");
 };
-
 export const getCategories = async (
   req: Request,
   res: Response
@@ -26,15 +27,29 @@ export const getCategories = async (
   );
 };
 
-export const getCategory = async (
+export const getAdminCategories = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const category = await getCategoryById(req.params.id);
+  const { categories, meta } = await getAdminCategoriesList(req);
+  successResponse(
+    res,
+    { categories: categories || [] },
+    "Categories data fetched successfully.",
+    200,
+    meta
+  );
+};
+
+export const getCategory = async (req: Request, res: Response) => {
+  const categoryId = req.params.id;
+  console.log("getCategory", req.user);
+  const includeInactive = req.user?.role === "admin"; // 👈 check user role from token
+
+  const category = await getCategoryById(categoryId, includeInactive);
 
   if (!category) {
     errorResponse(res, "Category not found", 404);
-    return;
   }
 
   successResponse(res, { category }, "Category fetched successfully.");
@@ -61,6 +76,20 @@ export const manageCategoryTag = async (
 
   const category = await updateCategoryTag(id, tag, action);
   successResponse(res, { category }, `Tag ${action}ed successfully`);
+};
+
+export const deleteActivateCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { flag } = req.body;
+
+  const category = await activateDeactivateById(req.params.id, flag);
+  if (!category) {
+    errorResponse(res, "Category not found", 404);
+    return;
+  }
+  successResponse(res, {}, "Category deleted successfully.");
 };
 
 export const deleteCategory = async (

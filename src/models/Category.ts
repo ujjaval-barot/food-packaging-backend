@@ -7,6 +7,7 @@ export interface ICategory extends Document {
   name: string;
   description?: string;
   parentCategory?: string;
+  isActive: boolean;
   labels?: CategoryLabel[];
   productCount: number;
   assets: IAsset[];
@@ -19,6 +20,7 @@ const categorySchema = new Schema<ICategory>(
     parentCategory: { type: Types.ObjectId, ref: "Category", default: null },
     labels: [{ type: String, enum: TAGS }],
     productCount: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true }, // 👈 add this
     assets: [
       {
         url: { type: String, required: true },

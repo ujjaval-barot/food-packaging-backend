@@ -179,7 +179,9 @@ export const getProductListByLabel = async (req: Request) => {
 };
 
 export const getProductById = async (id: string) => {
-  return await Product.findById(id).populate("category");
+  return await Product.findById(id)
+    .populate("category")
+    .populate("similarProducts");
 };
 
 export const updateProductById = async (
