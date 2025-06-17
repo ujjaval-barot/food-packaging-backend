@@ -4,7 +4,7 @@ import {
   ALLOWED_IMAGE_TYPES,
   ALLOWED_VIDEO_TYPES,
   MAX_VIDEO_SIZE,
-} from "../constants/enum";
+} from "../../constants/enum";
 
 const storage = multer.memoryStorage();
 

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import * as categoryController from "../controllers/categoryController";
-import { authenticateOptional } from "../middleware/authMiddleware";
-import { authorize } from "../middleware/roleMiddleware";
-import { validateRequest } from "../middleware/validateRequest";
+import { authenticate, authorize, validateRequest } from "../middleware";
+
+import { asyncHandler } from "../utils/asyncHandler";
 import {
   activateDeactivateCategorySchema,
   createCategorySchema,
@@ -10,7 +10,6 @@ import {
   updateCategorySchema,
   updateCategoryTagSchema,
 } from "../validations/categoryValidations";
-import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
@@ -35,7 +34,7 @@ const router = Router();
  */
 router.get(
   "/",
-  authenticateOptional,
+  authenticate(false),
   asyncHandler(categoryController.getCategories)
 );
 
@@ -60,7 +59,7 @@ router.get(
  */
 router.get(
   "/admin",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   asyncHandler(categoryController.getAdminCategories)
 );
@@ -88,7 +87,7 @@ router.get(
  */
 router.get(
   "/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   asyncHandler(categoryController.getCategory)
@@ -121,7 +120,7 @@ router.get(
  */
 router.post(
   "/",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(createCategorySchema),
   asyncHandler(categoryController.createCategory)
@@ -163,7 +162,7 @@ router.post(
  */
 router.put(
   "/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(updateCategorySchema, "body"),
@@ -213,7 +212,7 @@ router.put(
  */
 router.patch(
   "/:id/manage-tag",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(updateCategoryTagSchema, "body"),
@@ -241,7 +240,7 @@ router.patch(
  */
 router.post(
   "/deactivate/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(activateDeactivateCategorySchema, "body"),
@@ -273,7 +272,7 @@ router.post(
  */
 router.delete(
   "/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   asyncHandler(categoryController.deleteCategory)

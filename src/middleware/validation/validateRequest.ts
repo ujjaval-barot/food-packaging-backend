@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AnyZodObject, ZodEffects, ZodSchema } from "zod";
-import { errorResponse } from "../utils/responseHandler";
+import { errorResponse } from "../../utils/responseHandler";
 
 type ValidSchema = AnyZodObject | ZodEffects<AnyZodObject>;
 

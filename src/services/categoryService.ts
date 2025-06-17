@@ -35,6 +35,7 @@ export const getAdminCategoriesList = async (req: Request) => {
   const features = new APIFeatures(categoryQuery, req.query, {
     searchFields: ["name", "description"],
   })
+    .filter()
     .search()
     .sort()
     .paginate();

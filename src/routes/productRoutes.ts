@@ -1,7 +1,11 @@
 import { Router } from "express";
 import * as productController from "../controllers/productController";
-import { authenticateOptional } from "../middleware/authMiddleware";
-import { authorize } from "../middleware/roleMiddleware";
+import {
+  authenticate,
+  authorize,
+  validateRequest,
+  uploadMiddleware,
+} from "../middleware";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
   createProductSchema,
@@ -11,7 +15,6 @@ import {
   productListByLabelSchema,
   updateProductSchema,
 } from "../validations/productValidations";
-import { validateRequest } from "../middleware/validateRequest";
 
 const router = Router();
 
@@ -34,7 +37,7 @@ const router = Router();
  */
 router.get(
   "/by-category/:id",
-  authenticateOptional,
+  authenticate(false),
   validateRequest(productListByCategoryParamsSchema, "params"),
   validateRequest(productListByCategoryQuerySchema, "query"),
   asyncHandler(productController.getProducts)
@@ -52,7 +55,7 @@ router.get(
  */
 router.get(
   "/products-by-label",
-  authenticateOptional,
+  authenticate(false),
   validateRequest(productListByLabelSchema, "query"),
   asyncHandler(productController.getProductsByLabel)
 );
@@ -78,7 +81,7 @@ router.get(
  */
 router.get(
   "/:id",
-  authenticateOptional,
+  authenticate(false),
   validateRequest(getProductByIdSchema, "params"),
   asyncHandler(productController.getProduct)
 );
@@ -116,7 +119,7 @@ router.get(
  */
 router.post(
   "/",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(createProductSchema),
   asyncHandler(productController.createProduct)
@@ -158,7 +161,7 @@ router.post(
  */
 router.put(
   "/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getProductByIdSchema, "params"),
   validateRequest(updateProductSchema, "body"),
@@ -188,7 +191,7 @@ router.put(
  */
 router.delete(
   "/:id",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   validateRequest(getProductByIdSchema, "params"),
   asyncHandler(productController.deleteProduct)

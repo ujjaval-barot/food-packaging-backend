@@ -1,8 +1,6 @@
 import express from "express";
 import { uploadAssets } from "../controllers/assetController";
-import { uploadMiddleware } from "../middleware/uploadMiddleware";
-import { authenticateOptional } from "../middleware/authMiddleware";
-import { authorize } from "../middleware/roleMiddleware";
+import { authenticate, authorize, uploadMiddleware } from "../middleware";
 
 const router = express.Router();
 
@@ -39,7 +37,7 @@ const router = express.Router();
  */
 router.post(
   "/upload",
-  authenticateOptional,
+  authenticate(true),
   authorize(["admin"]),
   uploadMiddleware,
   uploadAssets
