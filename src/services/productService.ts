@@ -83,6 +83,54 @@ export const getProductsByCategoryId = async (req: Request) => {
   return { products, meta };
 };
 
+export const getAdminProductsList = async (req: Request) => {
+  const { category } = req.query;
+
+  const filter: any = {};
+
+  if (category) {
+    if (category === "null") {
+      filter.category = null;
+    } else {
+      // find subcategories under this category
+      const subCategories = await Category.find({ parentCategory: category });
+      const categoryIds = [
+        new mongoose.Types.ObjectId(category as string),
+        ...subCategories.map((sub) => sub._id),
+      ];
+
+      filter.category = { $in: categoryIds };
+    }
+  }
+
+  const productQuery = Product.find(filter).populate("category");
+
+  const features = new APIFeatures(productQuery, req.query, {
+    searchFields: ["name", "description"],
+  })
+    .filter()
+    .search()
+    .sort()
+    .paginate();
+
+  const products = await features.query;
+
+  const totalProducts = await Product.countDocuments(filter);
+
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  const meta = {
+    totalProducts,
+    page,
+    limit,
+    hasNextPage: page * limit < totalProducts,
+    hasPreviousPage: page > 1,
+  };
+
+  return { products, meta };
+};
+
 // export const getProductsByCategory = async (
 //   categoryId: string,
 //   queryParams: any
@@ -251,6 +299,31 @@ export const updateProductById = async (
     session.endSession();
     throw error;
   }
+};
+
+export const activateDeactivateById = async (id: string, flag: boolean) => {
+  const product = await Product.findByIdAndUpdate(
+    id,
+    { isActive: flag },
+    { new: true }
+  );
+
+  if (product) {
+    const incValue = flag ? 1 : -1;
+
+    await Category.findByIdAndUpdate(product.category, {
+      $inc: { productCount: incValue },
+    });
+
+    const category = await Category.findById(product.category);
+    if (category?.parentCategory) {
+      await Category.findByIdAndUpdate(category.parentCategory, {
+        $inc: { productCount: incValue },
+      });
+    }
+  }
+
+  return product;
 };
 
 export const deleteProductById = async (id: string) => {

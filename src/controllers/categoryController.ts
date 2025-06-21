@@ -78,7 +78,7 @@ export const manageCategoryTag = async (
   successResponse(res, { category }, `Tag ${action}ed successfully`);
 };
 
-export const deleteActivateCategory = async (
+export const activateDeactivateCategory = async (
   req: Request,
   res: Response
 ): Promise<void> => {

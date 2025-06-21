@@ -12,10 +12,6 @@ class APIFeatures<T> {
   filter() {
     const queryObj: any = {};
 
-    if (this.queryString.category) {
-      queryObj.category = this.queryString.category;
-    }
-
     if (this.queryString.active) {
       queryObj.isActive = this.queryString.active === "true";
     }

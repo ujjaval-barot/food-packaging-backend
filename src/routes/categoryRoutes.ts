@@ -244,7 +244,7 @@ router.post(
   authorize(["admin"]),
   validateRequest(getCategoryByIdSchema, "params"),
   validateRequest(activateDeactivateCategorySchema, "body"),
-  asyncHandler(categoryController.deleteActivateCategory)
+  asyncHandler(categoryController.activateDeactivateCategory)
 );
 
 /**

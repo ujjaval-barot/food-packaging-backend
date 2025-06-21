@@ -1,5 +1,4 @@
-import { Schema, model, Document, Types } from "mongoose";
-import { ICategory } from "./Category";
+import { Document, Schema, Types, model } from "mongoose";
 import { ASSET_TYPES } from "../constants/enum";
 import { IAsset } from "../types/custom";
 
@@ -14,6 +13,7 @@ export interface IProduct extends Document {
   }[];
   category: Types.ObjectId; // Parent category
   similarProducts?: Types.ObjectId[];
+  isActive: boolean;
   assets: IAsset[];
 }
 
@@ -43,6 +43,7 @@ const productSchema = new Schema<IProduct>(
     ],
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     similarProducts: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

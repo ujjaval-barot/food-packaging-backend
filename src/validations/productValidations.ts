@@ -77,3 +77,7 @@ export const productListByCategoryParamsSchema = z.object({
 export const productListByLabelSchema = z.object({
   label: z.enum(TAGS),
 });
+
+export const activateDeactivateProductSchema = z.object({
+  flag: z.boolean(),
+});

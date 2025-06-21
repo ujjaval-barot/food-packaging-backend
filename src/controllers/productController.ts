@@ -42,6 +42,20 @@ export const getProduct = async (
   successResponse(res, { product }, "Product fetched successfully.");
 };
 
+export const getAdminProducts = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { products, meta } = await productService.getAdminProductsList(req);
+  successResponse(
+    res,
+    { products: products || [] },
+    "Products data fetched successfully.",
+    200,
+    meta
+  );
+};
+
 export const updateProduct = async (
   req: Request,
   res: Response
@@ -55,6 +69,23 @@ export const updateProduct = async (
     return;
   }
   successResponse(res, { product }, "Product updated successfully.");
+};
+
+export const activateDeactivateCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { flag } = req.body;
+
+  const category = await productService.activateDeactivateById(
+    req.params.id,
+    flag
+  );
+  if (!category) {
+    errorResponse(res, "Category not found", 404);
+    return;
+  }
+  successResponse(res, {}, "Category deleted successfully.");
 };
 
 export const deleteProduct = async (

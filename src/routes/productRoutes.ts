@@ -8,6 +8,7 @@ import {
 } from "../middleware";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
+  activateDeactivateProductSchema,
   createProductSchema,
   getProductByIdSchema,
   productListByCategoryParamsSchema,
@@ -41,6 +42,32 @@ router.get(
   validateRequest(productListByCategoryParamsSchema, "params"),
   validateRequest(productListByCategoryQuerySchema, "query"),
   asyncHandler(productController.getProducts)
+);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Categories
+ *   description: Category management
+ */
+
+/**
+ * @swagger
+ * /api/categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
+router.get(
+  "/admin",
+  authenticate(true),
+  authorize(["admin"]),
+  asyncHandler(productController.getAdminProducts)
 );
 
 /**
@@ -166,6 +193,34 @@ router.put(
   validateRequest(getProductByIdSchema, "params"),
   validateRequest(updateProductSchema, "body"),
   asyncHandler(productController.updateProduct)
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Product found
+ *       404:
+ *         description: Product not found
+ */
+router.post(
+  "/deactivate/:id",
+  authenticate(true),
+  authorize(["admin"]),
+  validateRequest(getProductByIdSchema, "params"),
+  validateRequest(activateDeactivateProductSchema, "body"),
+  asyncHandler(productController.activateDeactivateCategory)
 );
 
 /**
