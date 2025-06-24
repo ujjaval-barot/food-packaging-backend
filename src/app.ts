@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import productRoutes from "./routes/productRoutes";
 import assetRoutes from "./routes/assetRoutes";
+import blogRoutes from "./routes/blogRoutes";
 import { errorResponse } from "./utils/responseHandler";
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/blogs", blogRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/assets", assetRoutes);
 
