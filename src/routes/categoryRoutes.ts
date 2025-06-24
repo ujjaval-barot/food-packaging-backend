@@ -87,8 +87,7 @@ router.get(
  */
 router.get(
   "/:id",
-  authenticate(true),
-  authorize(["admin"]),
+  authenticate(false),
   validateRequest(getCategoryByIdSchema, "params"),
   asyncHandler(categoryController.getCategory)
 );
