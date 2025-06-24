@@ -43,7 +43,6 @@ export const getAdminCategories = async (
 
 export const getCategory = async (req: Request, res: Response) => {
   const categoryId = req.params.id;
-  console.log("getCategory", req.user);
   const includeInactive = req.user?.role === "admin"; // 👈 check user role from token
 
   const category = await getCategoryById(categoryId, includeInactive);

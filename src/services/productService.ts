@@ -29,7 +29,6 @@ export const createProductService = async (body: CreateProductInput) => {
 
 export const getProductsByCategoryId = async (req: Request) => {
   const { id } = req.params;
-  console.log("categoryId", id);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error("Invalid category id format");
@@ -171,7 +170,6 @@ export const getAdminProductsList = async (req: Request) => {
 // };
 
 export const getProductListByLabel = async (req: Request) => {
-  console.log(req.query);
   const label = req.query.label as string;
   if (!label) throw new Error("Label is required");
 

@@ -25,7 +25,6 @@ export const getProducts = async (
 };
 
 export const getProductsByLabel = async (req: Request, res: Response) => {
-  console.log(req.params);
   const { products, meta } = await productService.getProductListByLabel(req);
   successResponse(res, { products }, "Products by label fetched.", 200, meta);
 };
