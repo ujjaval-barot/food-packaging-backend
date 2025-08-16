@@ -7,7 +7,6 @@ import {
   getCategoryById,
   getCategoryList,
   updateCategoryById,
-  updateCategoryTag,
 } from "../services/categoryService";
 import { errorResponse, successResponse } from "../utils/responseHandler";
 
@@ -64,17 +63,6 @@ export const updateCategory = async (
     return;
   }
   successResponse(res, { category }, "Categorie updated successfully.");
-};
-
-export const manageCategoryTag = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { id } = req.params;
-  const { tag, action } = req.body;
-
-  const category = await updateCategoryTag(id, tag, action);
-  successResponse(res, { category }, `Tag ${action}ed successfully`);
 };
 
 export const activateDeactivateCategory = async (

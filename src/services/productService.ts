@@ -27,33 +27,44 @@ export const createProductService = async (body: CreateProductInput) => {
   return product;
 };
 
-export const getProductsByCategoryId = async (req: Request) => {
-  const { id } = req.params;
+export const getProducts = async (req: Request) => {
+  const { categoryId, isFeatured, isPopular } = req.query;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new Error("Invalid category id format");
+  const filter: any = {};
+
+  if (categoryId) {
+    if (!mongoose.Types.ObjectId.isValid(categoryId as string)) {
+      throw new Error("Invalid category id format");
+    }
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      throw new Error("Invalid category id");
+    }
+
+    const subCategories = await Category.find({ parentCategory: categoryId });
+
+    const categoryIds = [
+      new mongoose.Types.ObjectId(categoryId as string),
+      ...subCategories.map((sub) => sub._id),
+    ];
+
+    const uniqueCategoryIds = [
+      ...new Set(categoryIds.map((id) => id.toString())),
+    ].map((idStr) => new mongoose.Types.ObjectId(idStr));
+
+    filter.category = { $in: uniqueCategoryIds };
   }
 
-  const category = await Category.findById(id);
-  if (!category) {
-    throw new Error("Invalid category id");
+  if (isFeatured) {
+    filter.isFeatured = isFeatured === "true";
   }
 
-  const subCategories = await Category.find({ parentCategory: id });
-
-  const categoryIds = [
-    new mongoose.Types.ObjectId(id),
-    ...subCategories.map((sub) => sub._id),
-  ];
-
-  const uniqueCategoryIds = [
-    ...new Set(categoryIds.map((id) => id.toString())),
-  ].map((idStr) => new mongoose.Types.ObjectId(idStr));
+  if (isPopular) {
+    filter.isPopular = isPopular === "true";
+  }
 
   // Build product query
-  const productQuery = Product.find({
-    category: { $in: uniqueCategoryIds },
-  }).populate("category");
+  const productQuery = Product.find(filter).populate("category");
 
   const features = new APIFeatures(productQuery, req.query, {
     searchFields: ["name", "description"],
@@ -64,9 +75,7 @@ export const getProductsByCategoryId = async (req: Request) => {
 
   const products = await features.query;
 
-  const totalProducts = await Product.countDocuments({
-    category: { $in: uniqueCategoryIds },
-  });
+  const totalProducts = await Product.countDocuments(filter);
 
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -169,60 +178,7 @@ export const getAdminProductsList = async (req: Request) => {
 //   return { products, meta };
 // };
 
-export const getProductListByLabel = async (req: Request) => {
-  const label = req.query.label as string;
-  if (!label) throw new Error("Label is required");
 
-  // 1. Get categories that have the label (could be parent or child categories)
-  const labeledCategories = await Category.find({ labels: label }).select(
-    "_id"
-  );
-
-  const labeledCategoryIds = labeledCategories.map((cat) => cat._id.toString());
-
-  // 2. Find subcategories of labeled parent categories
-  const subcategories = await Category.find({
-    parentCategory: { $in: labeledCategoryIds },
-  }).select("_id");
-
-  const subcategoryIds = subcategories.map((cat) => cat._id.toString());
-
-  // 3. Combine both labeled categories and subcategories
-  const allCategoryIds = [
-    ...new Set([...labeledCategoryIds, ...subcategoryIds]),
-  ];
-
-  // 4. Find products under these categories
-  const query = Product.find({ category: { $in: allCategoryIds } }).populate(
-    "category"
-  );
-
-  const features = new APIFeatures(query, req.query, {
-    searchFields: ["name", "description"],
-  })
-    .search()
-    .sort()
-    .paginate();
-
-  const products = await features.query;
-
-  const total = await Product.countDocuments({
-    category: { $in: allCategoryIds },
-  });
-
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-
-  const meta = {
-    total,
-    page,
-    limit,
-    hasNextPage: page * limit < total,
-    hasPreviousPage: page > 1,
-  };
-
-  return { products, meta };
-};
 
 export const getProductById = async (id: string) => {
   return await Product.findById(id)

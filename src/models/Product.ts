@@ -14,6 +14,8 @@ export interface IProduct extends Document {
   category: Types.ObjectId; // Parent category
   similarProducts?: Types.ObjectId[];
   isActive: boolean;
+  isFeatured: boolean;
+  isPopular: boolean;
   assets: IAsset[];
 }
 
@@ -44,6 +46,8 @@ const productSchema = new Schema<IProduct>(
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     similarProducts: [{ type: Schema.Types.ObjectId, ref: "Product" }],
     isActive: { type: Boolean, default: true },
+    isFeatured: { type: Boolean, default: false },
+    isPopular: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

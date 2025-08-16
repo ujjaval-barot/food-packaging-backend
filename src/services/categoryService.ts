@@ -94,25 +94,7 @@ export const updateCategoryById = async (
   });
 };
 
-export const updateCategoryTag = async (
-  categoryId: string,
-  tag: CategoryLabel,
-  action: string
-) => {
-  const category = await Category.findById(categoryId);
-  if (!category) throw new Error("Category not found");
 
-  if (action === "add") {
-    if (!category?.labels?.includes(tag)) {
-      category?.labels?.push(tag);
-    }
-  } else if (action === "remove") {
-    category.labels = category?.labels?.filter((t) => t !== tag);
-  }
-
-  await category.save();
-  return category;
-};
 
 export const activateDeactivateById = async (id: string, flag: boolean) => {
   return await Category.findByIdAndUpdate(

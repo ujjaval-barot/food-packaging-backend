@@ -14,7 +14,7 @@ export const getProducts = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { products, meta } = await productService.getProductsByCategoryId(req);
+  const { products, meta } = await productService.getProducts(req);
   successResponse(
     res,
     { products },
@@ -24,10 +24,7 @@ export const getProducts = async (
   );
 };
 
-export const getProductsByLabel = async (req: Request, res: Response) => {
-  const { products, meta } = await productService.getProductListByLabel(req);
-  successResponse(res, { products }, "Products by label fetched.", 200, meta);
-};
+
 
 export const getProduct = async (
   req: Request,

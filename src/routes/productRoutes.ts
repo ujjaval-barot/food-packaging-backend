@@ -12,9 +12,8 @@ import {
   createProductSchema,
   getProductByIdSchema,
   productListByCategoryParamsSchema,
-  productListByCategoryQuerySchema,
-  productListByLabelSchema,
   updateProductSchema,
+  productListQuerySchema,
 } from "../validations/productValidations";
 
 const router = Router();
@@ -40,7 +39,7 @@ router.get(
   "/by-category/:id",
   authenticate(false),
   validateRequest(productListByCategoryParamsSchema, "params"),
-  validateRequest(productListByCategoryQuerySchema, "query"),
+  validateRequest(productListQuerySchema, "query"),
   asyncHandler(productController.getProducts)
 );
 
@@ -50,6 +49,27 @@ router.get(
  *   name: Categories
  *   description: Category management
  */
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of products
+ */
+router.get(
+  "/",
+  authenticate(false),
+  validateRequest(productListQuerySchema, "query"),
+  asyncHandler(productController.getProducts)
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
 
 /**
  * @swagger
@@ -68,23 +88,6 @@ router.get(
   authenticate(true),
   authorize(["admin"]),
   asyncHandler(productController.getAdminProducts)
-);
-
-/**
- * @swagger
- * /api/products:
- *   get:
- *     summary: Get all products by label
- *     tags: [Products]
- *     responses:
- *       200:
- *         description: List of products
- */
-router.get(
-  "/products-by-label",
-  authenticate(false),
-  validateRequest(productListByLabelSchema, "query"),
-  asyncHandler(productController.getProductsByLabel)
 );
 
 /**

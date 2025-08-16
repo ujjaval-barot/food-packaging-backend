@@ -18,7 +18,6 @@ const categorySchema = new Schema<ICategory>(
     name: { type: String, required: true, unique: true },
     description: String,
     parentCategory: { type: Types.ObjectId, ref: "Category", default: null },
-    labels: [{ type: String, enum: TAGS }],
     productCount: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true }, // 👈 add this
     assets: [

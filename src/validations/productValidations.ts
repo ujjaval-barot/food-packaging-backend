@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ASSET_TYPES, TAGS } from "../constants/enum";
 
 export const getProductByIdSchema = z.object({
-  id: z.string(),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid product ID format"),
 });
 
 export type getProductByIdInput = z.infer<typeof getProductByIdSchema>;
@@ -36,6 +36,8 @@ export const createProductSchema = z.object({
     .array(assetSchema)
     .min(1, "At least one asset is required")
     .max(5, "Maximum 5 assets allowed"),
+  isFeatured: z.boolean().optional(),
+  isPopular: z.boolean().optional(),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;
@@ -50,6 +52,8 @@ export const updateProductSchema = z
     category: z.string().optional(),
     similarProducts: z.array(z.string()).optional(),
     assets: z.array(assetSchema).max(5, "Maximum 5 assets allowed").optional(),
+    isFeatured: z.boolean().optional(),
+    isPopular: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (Object.keys(data).length === 0) {
@@ -62,12 +66,14 @@ export const updateProductSchema = z
 
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
 
-export const productListByCategoryQuerySchema = z.object({
+export const productListQuerySchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
   sort: z.string().optional(),
   categoryId: z.string().optional(),
   search: z.string().optional(),
+  isFeatured: z.string().optional(),
+  isPopular: z.string().optional(),
 });
 
 export const productListByCategoryParamsSchema = z.object({
