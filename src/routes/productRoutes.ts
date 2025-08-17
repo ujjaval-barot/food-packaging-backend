@@ -18,30 +18,30 @@ import {
 
 const router = Router();
 
-/**
- * @swagger
- * tags:
- *   name: Products
- *   description: Product management
- */
+// /**
+//  * @swagger
+//  * tags:
+//  *   name: Products
+//  *   description: Product management
+//  */
 
-/**
- * @swagger
- * /api/products:
- *   get:
- *     summary: Get all products
- *     tags: [Products]
- *     responses:
- *       200:
- *         description: List of products
- */
-router.get(
-  "/by-category/:id",
-  authenticate(false),
-  validateRequest(productListByCategoryParamsSchema, "params"),
-  validateRequest(productListQuerySchema, "query"),
-  asyncHandler(productController.getProducts)
-);
+// /**
+//  * @swagger
+//  * /api/products:
+//  *   get:
+//  *     summary: Get all products
+//  *     tags: [Products]
+//  *     responses:
+//  *       200:
+//  *         description: List of products
+//  */
+// router.get(
+//   "/by-category/:id",
+//   authenticate(false),
+//   validateRequest(productListByCategoryParamsSchema, "params"),
+//   validateRequest(productListQuerySchema, "query"),
+//   asyncHandler(productController.getProducts)
+// );
 
 /**
  * @swagger
