@@ -178,8 +178,6 @@ export const getAdminProductsList = async (req: Request) => {
 //   return { products, meta };
 // };
 
-
-
 export const getProductById = async (id: string) => {
   return await Product.findById(id)
     .populate("category")

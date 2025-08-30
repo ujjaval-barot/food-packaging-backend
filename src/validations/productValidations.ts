@@ -28,6 +28,21 @@ export const createProductSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   inStock: z.boolean().optional(),
+  price: z
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a number",
+    })
+    .min(0, "Price must be greater than or equal to 0"),
+  discount: z
+    .number({
+      invalid_type_error: "Discount must be a number",
+    })
+    .min(0, "Discount cannot be negative")
+    .max(100, "Discount cannot exceed 100")
+    .optional()
+    .default(0),
+
   highlights: z.array(z.string()).optional(),
   specifications: z.array(specificationSchema).optional(),
   category: z.string(), // Mongo ObjectId as string
@@ -47,6 +62,9 @@ export const updateProductSchema = z
     name: z.string().optional(),
     description: z.string().optional(),
     inStock: z.boolean().optional(),
+    price: z.number().min(0).optional(),
+    discount: z.number().min(0).max(100).optional(),
+
     highlights: z.array(z.string()).optional(),
     specifications: z.array(specificationSchema).optional(),
     category: z.string().optional(),

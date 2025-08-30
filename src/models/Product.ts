@@ -6,6 +6,8 @@ export interface IProduct extends Document {
   name: string;
   description?: string;
   inStock: boolean;
+  price: number; // <-- add
+  discount?: number; // <-- add
   highlights: string[];
   specifications: {
     title: string;
@@ -24,6 +26,10 @@ const productSchema = new Schema<IProduct>(
     name: { type: String, required: true },
     description: String,
     inStock: { type: Boolean, default: true },
+
+    price: { type: Number, required: true }, // <-- add
+    discount: { type: Number, default: 0 }, // <-- add
+
     assets: [
       {
         url: { type: String, required: true },
@@ -51,5 +57,4 @@ const productSchema = new Schema<IProduct>(
   },
   { timestamps: true }
 );
-
 export default model<IProduct>("Product", productSchema);
